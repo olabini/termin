@@ -1,5 +1,5 @@
 
-module Termin
+class Termin
   module EvidenceUtils
     def with_prefix(prefix, ur)
       if ur =~ %r[^//]
@@ -20,3 +20,4 @@ require 'termin/javascript_evidence'
 require 'termin/css_evidence'
 require 'termin/cookies_evidence'
 require 'termin/images_evidence'
+require 'termin/iframe_evidence'

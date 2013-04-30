@@ -1,28 +1,61 @@
-require 'httparty'
 require 'nokogiri'
 require 'uri'
 
 require 'termin/evidence'
 require 'termin/checker'
+require 'termin/reporter'
+require 'termin/loader'
 
-module Termin
-  def self.apply_checkers context, checkers, evidence
-    checkers.each do |c|
+class Termin
+  class << self
+    def default_reporter
+      Termin::ConsoleReporter.new
+    end
+
+    def default_loader
+      Termin::HTTPLoader.new
+    end
+
+    def default_checkers
+      Checker.all
+    end
+
+    def default_evidence
+      [CookiesEvidence, ImagesEvidence, CssEvidence, JavascriptEvidence, IFrameEvidence]
+    end
+
+    def report_on url
+      Termin.new(url).report!
+    end
+  end
+
+  attr_reader :url, :reporter, :loader, :checkers, :evidence
+
+  def initialize(url, reporter = Termin.default_reporter, loader = Termin.default_loader, checkers = Termin.default_checkers, evidence = Termin.default_evidence)
+    @url = url
+    @reporter = reporter
+    @loader = loader
+    @checkers = checkers
+    @evidence = evidence
+  end
+
+  def apply_checkers context, evidence
+    @checkers.each do |c|
       if (c.needs - evidence.provides).empty?
         c.check context, evidence
       end
     end
   end
 
-  def self.report_on url
-    puts "REPORTING ON: -------- #{url} --------"
-    re = HTTParty.get(url)
+  def report!
+    @reporter.starting @url
+    re = @loader.get @url
     response = Nokogiri::HTML(re.body)
-    uri = URI.parse url
-    checkers = Checker.all
-    [CookiesEvidence, ImagesEvidence, CssEvidence, JavascriptEvidence].each do |evc|
-      evc.from({uri: uri, full_response: re}, response) do |e|
-        apply_checkers uri, checkers, e
+    uri = URI.parse @url
+    context = {uri: uri, full_response: re, termin: self}
+    @evidence.each do |evc|
+      evc.from(context, response) do |e|
+        apply_checkers context, e
       end
     end
   end

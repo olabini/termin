@@ -1,6 +1,7 @@
 
-module Termin
+class Termin
   class CookiesEvidence < Evidence
+    attr_reader :cookie
     def initialize(cc)
       @cookie = cc
     end

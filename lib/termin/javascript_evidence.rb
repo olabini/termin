@@ -1,5 +1,5 @@
 
-module Termin
+class Termin
   class JavascriptEvidence < Evidence
     attr_reader :content
 
@@ -14,9 +14,9 @@ module Termin
     class Linked < JavascriptEvidence
       attr_reader :link
 
-      def initialize(link)
+      def initialize(context, link)
         @link = link
-        super HTTParty.get(link.to_s).body
+        super context[:termin].loader.get(link.to_s).body
       end
 
       def provides
@@ -28,7 +28,7 @@ module Termin
 
     def self.from(context, response)
       response.css('script').select { |x| x["type"] == "text/javascript" && x["src"] }.map { |x| context[:uri] + URI.parse(with_prefix(context[:uri].scheme, x["src"])) }.each do |al|
-        yield Linked.new(al)
+        yield Linked.new(context, al)
       end
     end
   end

@@ -1,5 +1,5 @@
 
-module Termin
+class Termin
   class ImagesEvidence < Evidence
     attr_reader :link
 

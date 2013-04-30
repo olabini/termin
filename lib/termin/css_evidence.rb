@@ -1,7 +1,7 @@
 require 'httparty'
 require 'css_parser'
 
-module Termin
+class Termin
   class CssEvidence < Evidence
     def initialize(content)
       @content = content
@@ -20,9 +20,9 @@ module Termin
     class Linked < CssEvidence
       attr_reader :link
 
-      def initialize(link)
+      def initialize(context, link)
         @link = link
-        super HTTParty.get(link.to_s).body
+        super context[:termin].loader.get(link.to_s).body
       end
 
       def provides
@@ -32,7 +32,7 @@ module Termin
 
     def self.from(context, response)
       response.css('link').select { |x| x["type"] == "text/css" }.map { |x| context[:uri] + URI.parse(x["href"]) }.each do |al|
-        yield Linked.new(al)
+        yield Linked.new(context, al)
       end
 
       response.css('style').select { |x| x["type"] == "text/css" }.each do |st|
