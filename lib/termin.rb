@@ -21,7 +21,7 @@ class Termin
     end
 
     def default_evidence
-      [CookiesEvidence, ImagesEvidence, CssEvidence, JavascriptEvidence, IFrameEvidence]
+      [CookiesEvidence, ImagesEvidence, CssEvidence, JavascriptEvidence, IFrameEvidence, MetaEvidence, ObjectEvidence]
     end
 
     def report_on url
@@ -29,7 +29,7 @@ class Termin
     end
   end
 
-  attr_reader :url, :reporter, :loader, :checkers, :evidence
+  attr_accessor :url, :reporter, :loader, :checkers, :evidence
 
   def initialize(url, reporter = Termin.default_reporter, loader = Termin.default_loader, checkers = Termin.default_checkers, evidence = Termin.default_evidence)
     @url = url

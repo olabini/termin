@@ -11,6 +11,10 @@ class Termin
       super + [:javascript, :content]
     end
 
+    def ==(o)
+      self.content == o.content
+    end
+
     class Linked < JavascriptEvidence
       attr_reader :link
 
@@ -29,6 +33,9 @@ class Termin
     def self.from(context, response)
       response.css('script').select { |x| x["type"] == "text/javascript" && x["src"] }.map { |x| context[:uri] + URI.parse(with_prefix(context[:uri].scheme, x["src"])) }.each do |al|
         yield Linked.new(context, al)
+      end
+      response.css('script').select { |x| !x["src"]}.each do |al|
+        yield JavascriptEvidence.new(al.content)
       end
     end
   end

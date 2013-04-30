@@ -52,8 +52,10 @@ class Termin
       end
     end
 
+    require 'termin/social_checker'
+
     def self.all
-      [ExternalLink.new, CssUrl.new, Cookies.new]
+      [ExternalLink.new, CssUrl.new, Cookies.new, *Social.all]
     end
   end
 end

@@ -56,6 +56,22 @@ def google_iframe
   "<iframe src=\"http://google.com/stuff.html\"></iframe>"
 end
 
+def local_reload
+  "<meta http-equiv=\"refresh\" content=\"0;URL='http://olabini.com/foo.html'\" />"
+end
+
+def google_reload
+  "<meta http-equiv=\"refresh\" content=\"0;URL='http://google.com/do_stuff.html'\" />"
+end
+
+def google_reload2
+  "<meta http-equiv=\"refresh\" content=\"0;URL=http://google.com/do_stuff.html\" />"
+end
+
+def google_reload3
+  "<meta http-equiv=\"refresh\" content='\"0;URL=http://google.com/do_stuff.html\"' />"
+end
+
 def load_harness(url, inserts)
   cookies = inserts[:COOKIES] || []
   html_str = File.read(File.join(File.dirname(__FILE__), "harness.html")).gsub(/<<<CONTENT:(.*?)>>>/) do
